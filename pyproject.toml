@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "data-miners"
+version = "0.1.0"
+description = ""
+authors = ["Lorenzobattistela <lorenzowottrich@gmail.com>"]
+readme = "README.md"
+packages = [{include = "data_miners"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.24.2"
+pandas = "^1.5.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
