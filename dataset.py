@@ -1,5 +1,5 @@
 import os
-import email
+from email import parser, policy
 import logging
 import pandas as pd
 import numpy as np
@@ -9,24 +9,51 @@ HAM = 1
 
 
 
+def load_generated_spam() -> pd.DataFrame:
+    try:
+        df = pd.read_csv('generated_spam.csv', encoding="utf-8", delimiter='|')
+        df['is_spam'] = df['is_spam'].transform(lambda x: SPAM if x == True else HAM)
+        logging.info("Loaded generated spam dataset successfully.")
+        return df
+    except FileNotFoundError:
+        logging.error("File not found: %s", 'generated_spam.csv')
+        exit()
+
 def email_dataset():
     ham_filenames = [name for name in sorted(os.listdir('./hamnspam/ham')) if len(name) > 20]
     spam_filenames = [name for name in sorted(os.listdir('./hamnspam/spam')) if len(name) > 20]
 
     ham_emails = [load_email(is_spam=False, filename=name) for name in ham_filenames]
-    print(len(ham_emails))
-    print(ham_emails[0])
     spam_emails = [load_email(is_spam=True, filename=name) for name in spam_filenames]
-    print(len(spam_emails))
-    print(ham_emails[0])
-    
+
+    spam_emails = [str(txt_email.get_payload()) for txt_email in spam_emails if get_email_structure(txt_email) == 'text/plain']
+    ham_emails = [str(txt_email.get_payload()) for txt_email in ham_emails if get_email_structure(txt_email) == 'text/plain']
+    email_df = pd.DataFrame(spam_emails, columns=['message'])
+    email_df['is_spam'] = SPAM
+    ham_df = pd.DataFrame(ham_emails, columns=['message'])
+    ham_df['is_spam'] = HAM
+    return pd.concat([email_df, ham_df])
+
+def get_email_structure(email):
+    if isinstance(email, str):
+        return email
+    payload = email.get_payload()
+    if isinstance(payload, list):
+        return "multipart({})".format(", ".join([
+            get_email_structure(sub_email)
+            for sub_email in payload
+        ]))
+    else:
+        return email.get_content_type()
+
 def load_email(is_spam: bool, filename: str):
     dir = "./hamnspam/spam" if is_spam else "./hamnspam/ham"
     try:
         with open(os.path.join(dir, filename), "rb") as f:
-            return email.parser.BytesParser(policy=email.policy.default).parse(f)
+            return parser.BytesParser(policy=policy.default).parse(f)
     except IOError:
         logging.error(f"IoError: {IOError.with_traceback}")
+
 
 def spam_dataset(filename: str) -> pd.DataFrame:
     try:
@@ -75,14 +102,12 @@ def combine_spam_messages_with_url(spam_df: pd.DataFrame, url_df: pd.DataFrame, 
     return pd.concat([spam_df, combined_df])
 
 
-def main():
+def get_general_dataset() -> pd.DataFrame:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-    # spam_df = spam_dataset(filename='spam.csv')
-    # url_df = urls_dataset('urls_spam.csv')
-    # combined_df = combine_spam_messages_with_url(spam_df=spam_df, url_df=url_df)
-    # logging.info("Combined dataframe with URLs to form new messages. New df shape: %s", combined_df.shape)
-    email_dataset()
-
-
-if __name__ == '__main__':
-    main()
+    spam_df = spam_dataset(filename='spam.csv')
+    url_df = urls_dataset('urls_spam.csv')
+    combined_df = combine_spam_messages_with_url(spam_df=spam_df, url_df=url_df)
+    logging.info("Combined dataframe with URLs to form new messages. New df shape: %s", combined_df.shape)
+    email_df = email_dataset()
+    gen_spam_df = load_generated_spam()
+    return pd.concat([combined_df, email_df, gen_spam_df])
