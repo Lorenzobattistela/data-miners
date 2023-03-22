@@ -8,6 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 
 df = dataset.get_general_dataset()
+df = df.sample(frac=1, random_state=1).reset_index(drop=True)
 
 X = df['message']
 y = df['is_spam']
