@@ -10,6 +10,8 @@ packages = [{include = "data_miners"}]
 python = "^3.10"
 numpy = "^1.24.2"
 pandas = "^1.5.3"
+scikit-learn = "^1.2.2"
+nltk = "^3.8.1"
 
 
 [build-system]
