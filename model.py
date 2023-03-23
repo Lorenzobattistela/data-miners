@@ -2,17 +2,15 @@ import dataset
 import logging
 import datetime
 import dill
-import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 class Model():
-    def __init__(self, model: LogisticRegression, date_of_creation: datetime.date, vectorizer: CountVectorizer) -> None:
+    def __init__(self, model: MultinomialNB, date_of_creation: datetime.date, vectorizer: CountVectorizer) -> None:
         self.model = model
         self.date_of_creation = date_of_creation
         self.vectorizer = vectorizer
@@ -33,7 +31,7 @@ def load_model(filepath: str = 'model.pkl') -> Model:
         logging.error(f"IOError: {e.with_traceback}")
 
 
-def predict_label(prompt: str, classifier: LogisticRegression, vectorizer: CountVectorizer):
+def predict_label(prompt: str, classifier: MultinomialNB, vectorizer: CountVectorizer):
     # Preprocess input string using the same steps as training data
     input_vec = vectorizer.transform([prompt])
 
@@ -55,16 +53,16 @@ def train_model():
     X_test_vec = vectorizer.transform(X_test)
 
     # Train Logistic Regression classifier
-    lr_classifier = LogisticRegression(max_iter=10000)
-    lr_classifier.fit(X_train_vec, y_train)
-    lr_pred = lr_classifier.predict(X_test_vec)
+    nb_classifier = MultinomialNB()
+    nb_classifier.fit(X_train_vec, y_train)
+    nb_pred = nb_classifier.predict(X_test_vec)
 
     # Evaluate Logistic Regression classifier
-    lr_accuracy = accuracy_score(y_test, lr_pred)
-    lr_f1_score = f1_score(y_test, lr_pred)
-    lr_cm = confusion_matrix(y_test, lr_pred)
-    logging.info(f"Accuracy: {lr_accuracy}\nF1 Score: {lr_f1_score}\nConfusion Matrix: {lr_cm}")
-    return lr_classifier, vectorizer
+    nb_accuracy = accuracy_score(y_test, nb_pred)
+    nb_f1_score = f1_score(y_test, nb_pred)
+    nb_cm = confusion_matrix(y_test, nb_pred)
+    logging.info(f"Accuracy: {nb_accuracy}\nF1 Score: {nb_f1_score}\nConfusion Matrix: {nb_cm}")
+    return nb_classifier, vectorizer
 
 def re_train_model():
     trained, vectorizer = train_model()
