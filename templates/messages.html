@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Message Queue</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('.static', filename='messages.css')}}"
+    />
+  </head>
+  <body>
+    <h1>Message Queue</h1>
+    <h3>Spam is 0, Ham is 1</h3>
+    {% for message in messages %}
+    <div class="msgs">
+      <p>
+        <strong>Message:</strong> {{ message[1] }}
+        <strong>Classification:</strong> {{ message[2] }}
+      </p>
+      <form method="post" action="/admin/queue">
+        <input id="msg_id" type="hidden" name="msg_id" value="{{ message[0] }}" />
+        <input type="submit" value="Decline"></input>
+      </form>
+    </div>
+    {% endfor %}
+  </body>
+</html>
