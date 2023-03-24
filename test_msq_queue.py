@@ -4,13 +4,15 @@ import os
 
 FILENAME = "test.sqlite"
 
+
 def test_db_creation():
     db = Database(FILENAME)
     assert db.db_file == FILENAME
     db.connect()
-    assert db.connection != None
+    assert db.connection is not None
     db.drop_database()
     db.close()
+
 
 def test_message_inserting():
     db = Database(FILENAME)
@@ -18,9 +20,10 @@ def test_message_inserting():
     db.insert_message(message="test", is_spam=0)
     messages = db.get_all_messages()
     is_in = 'test' in messages[0]
-    assert  is_in == True, "Message should have been stored."
+    assert is_in is True, "Message should have been stored."
     db.drop_database()
     db.close()
+
 
 def test_message_updating():
     db = Database(FILENAME)
@@ -32,6 +35,7 @@ def test_message_updating():
     db.drop_database()
     db.close()
 
+
 def test_message_deleting_by_msg():
     db = Database(FILENAME)
     db.connect()
@@ -41,6 +45,7 @@ def test_message_deleting_by_msg():
     assert len(msgs) == 0, "Should delete the only message."
     db.drop_database()
     db.close()
+
 
 def test_message_deleting_by_id():
     db = Database(FILENAME)
@@ -52,6 +57,7 @@ def test_message_deleting_by_id():
     db.drop_database()
     db.close()
 
+
 def test_message_getter():
     db = Database(FILENAME)
     db.connect()
@@ -60,6 +66,7 @@ def test_message_getter():
     assert msgs[0] == (1, "test", 0), "Message should be equal to the inserted."
     db.drop_database()
     db.close()
+
 
 def test_spam_getter():
     db = Database(FILENAME)
@@ -72,6 +79,7 @@ def test_spam_getter():
     db.drop_database()
     db.close()
 
+
 def test_csv_writing():
     db = Database(FILENAME)
     db.connect()
@@ -81,6 +89,7 @@ def test_csv_writing():
     os.remove("test.csv")
     db.drop_database()
     db.close()
+
 
 @pytest.fixture(scope="session", autouse=True)
 def cleanup(request):

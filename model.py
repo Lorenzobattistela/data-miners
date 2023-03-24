@@ -9,11 +9,13 @@ from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
+
 class Model():
     def __init__(self, model: MultinomialNB, date_of_creation: datetime.date, vectorizer: CountVectorizer) -> None:
         self.model = model
         self.date_of_creation = date_of_creation
         self.vectorizer = vectorizer
+
 
 def store_model(model: Model, filepath: str = 'model.pkl'):
     try:
@@ -21,6 +23,7 @@ def store_model(model: Model, filepath: str = 'model.pkl'):
             dill.dump(model, f)
     except IOError as e:
         logging.error(f"IOError: {e.with_traceback}")
+
 
 def load_model(filepath: str = 'model.pkl') -> Model:
     try:
@@ -38,6 +41,7 @@ def predict_label(prompt: str, classifier: MultinomialNB, vectorizer: CountVecto
     # Predict label using trained classifier
     pred = classifier.predict(input_vec)
     return 'spam' if pred[0] == 0 else 'ham'
+
 
 def train_model():
     df = dataset.get_general_dataset()
@@ -63,6 +67,7 @@ def train_model():
     nb_cm = confusion_matrix(y_test, nb_pred)
     logging.info(f"Accuracy: {nb_accuracy}\nF1 Score: {nb_f1_score}\nConfusion Matrix: {nb_cm}")
     return nb_classifier, vectorizer
+
 
 def re_train_model(filepath: str = "model.pkl"):
     trained, vectorizer = train_model()

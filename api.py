@@ -1,5 +1,5 @@
-import json
-from flask import Flask, request, jsonify, make_response, render_template, redirect, url_for
+
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 import jwt
 from functools import wraps
 from model import load_model, predict_label
@@ -10,18 +10,22 @@ HAM = 1
 
 app = Flask(__name__)
 
+
 def get_model():
     return load_model()
+
 
 def delete_message(msg_id: str):
     db = Database("msg_queue.sqlite")
     db.connect()
     db.delete_message_by_id(msg_id)
 
+
 def get_messages():
     db = Database("msg_queue.sqlite")
     db.connect()
     return db.get_all_messages()
+
 
 def store_message_in_queue(message: str, prediction: str):
     db = Database("msg_queue.sqlite")
@@ -51,6 +55,7 @@ def token_required(f):
 def home():
     return "OK"
 
+
 @app.route("/admin/queue", methods=['GET', 'POST'])
 def msg_queue():
     if request.method == 'GET':
@@ -63,7 +68,6 @@ def msg_queue():
     return redirect(url_for('msg_queue'))
 
 
-
 @app.route("/predict", methods=['POST'])
 def predict_route():
     ai_model = get_model()
@@ -71,5 +75,6 @@ def predict_route():
     prediction = predict_label(prompt=json["prompt"], classifier=ai_model.model, vectorizer=ai_model.vectorizer)
     store_message_in_queue(message=json["prompt"], prediction=prediction)
     return jsonify({"prediction": prediction})
+
 
 app.run()

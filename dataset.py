@@ -2,20 +2,21 @@ import os
 from email import parser, policy
 import logging
 import pandas as pd
-import numpy as np
 
 SPAM = 0
 HAM = 1
 
+
 def load_generated_spam() -> pd.DataFrame:
     try:
         df = pd.read_csv('generated_spam.csv', encoding="utf-8", delimiter='|')
-        df['is_spam'] = df['is_spam'].transform(lambda x: SPAM if x == True else HAM)
+        df['is_spam'] = df['is_spam'].transform(lambda x: SPAM if x is True else HAM)
         logging.info("Loaded generated spam dataset successfully.")
         return df
     except FileNotFoundError:
         logging.error("File not found: %s", 'generated_spam.csv')
         exit()
+
 
 def email_dataset():
     ham_filenames = [name for name in sorted(os.listdir('./hamnspam/ham')) if len(name) > 20]
@@ -32,6 +33,7 @@ def email_dataset():
     ham_df['is_spam'] = HAM
     return pd.concat([email_df, ham_df])
 
+
 def get_email_structure(email):
     if isinstance(email, str):
         return email
@@ -43,6 +45,7 @@ def get_email_structure(email):
         ]))
     else:
         return email.get_content_type()
+
 
 def load_email(is_spam: bool, filename: str):
     dir = "./hamnspam/spam" if is_spam else "./hamnspam/ham"
@@ -75,8 +78,8 @@ def urls_dataset(filename: str) -> pd.DataFrame:
     except FileNotFoundError:
         print("File not found: {}".format(filename))
         exit()
-    
-    df['is_spam'] = df["is_spam"].transform(lambda x: SPAM if x == True else HAM)
+
+    df['is_spam'] = df["is_spam"].transform(lambda x: SPAM if x is True else HAM)
     df.drop_duplicates(inplace=True)
     return df
 
