@@ -3,6 +3,7 @@ from sklearn.naive_bayes import MultinomialNB
 import model
 import os
 import datetime
+import pytest
 
 FILENAME = "test.pkl"
 
@@ -30,3 +31,10 @@ def test_model_retraining():
     model.re_train_model(FILENAME)
     assert os.path.isfile("test.pkl"), "Should have written a pkl file."
     os.remove(FILENAME)
+
+@pytest.fixture(scope="session", autouse=True)
+def cleanup(request):
+    def remove_files():
+        if os.path.exists(FILENAME):
+            os.remove(FILENAME)
+    request.addfinalizer(remove_files)
