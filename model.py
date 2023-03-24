@@ -1,4 +1,5 @@
 import dataset
+import os
 import logging
 import datetime
 import dill
@@ -27,6 +28,9 @@ def store_model(model: Model, filepath: str = 'model.pkl'):
 
 def load_model(filepath: str = 'model.pkl') -> Model:
     try:
+        if not os.path.isfile(filepath):
+            logging.info("Retraining model")
+            re_train_model()
         with open(file=filepath, mode="rb") as f:
             model = dill.load(f)
         return model
