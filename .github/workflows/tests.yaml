@@ -1,37 +1,41 @@
 name: Python CI
 
 on:
-  pull_request:
-    branches: ["main"]
   push:
-    branches: ["main"]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        python-version: [3.9]
+
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Set up Poetry
-      uses: dmerejkowsky/action-poetry@v2
-      with:
-        virtualenvs.create: true
+      - name: Install Poetry
+        run: |
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+          source $HOME/.poetry/env
+        shell: bash
 
-    - name: Install dependencies
-      run: poetry install
-      working-directory: ${{ github.workspace }}/data_miners  # <-- Add this line
+      - name: Install dependencies
+        run: poetry install
+        working-directory: ${{ github.workspace }}/data_miners
 
-    - name: Run tests
-      run: poetry run pytest
-      working-directory: ${{ github.workspace }}/data_miners  # <-- Add this line
+      - name: Run tests
+        run: poetry run pytest
+        working-directory: ${{ github.workspace }}/data_miners
 
-    - name: Run linter
-      run: poetry run flake8 --exclude=.git,__pycache__,.venv --max-line-length=120
-      working-directory: ${{ github.workspace }}/data_miners  # <-- Add this line
+      - name: Run linter
+        run: poetry run flake8
+        working-directory: ${{ github.workspace }}/data_miners
