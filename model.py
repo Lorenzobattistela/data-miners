@@ -64,7 +64,7 @@ def train_model():
     logging.info(f"Accuracy: {nb_accuracy}\nF1 Score: {nb_f1_score}\nConfusion Matrix: {nb_cm}")
     return nb_classifier, vectorizer
 
-def re_train_model():
+def re_train_model(filepath: str = "model.pkl"):
     trained, vectorizer = train_model()
     chosen_model = Model(model=trained, date_of_creation=datetime.date.today(), vectorizer=vectorizer)
-    store_model(model=chosen_model)
+    store_model(model=chosen_model, filepath=filepath)
