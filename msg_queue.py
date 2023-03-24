@@ -1,4 +1,6 @@
 import sqlite3
+import csv
+import logging
 
 class Database:
     def __init__(self, db_file):
@@ -57,5 +59,17 @@ class Database:
                           WHERE is_spam = 1''')
         rows = cursor.fetchall()
         return rows
+    
+    def write_messages_to_csv(self, filename: str  = "new_spam.csv"):
+        messages = self.get_all_messages()
+        try:
+            with open(filename, 'w') as csvfile:
+                writer = csv.writer(csvfile, delimiter=',')
+                writer.writerow(['message', 'is_spam'])
+                for message in messages:
+                    writer.writerow([message[0], message[1]])
+        except IOError as e:
+            logging.error(f"IOError: {e}")
+        
 
 
