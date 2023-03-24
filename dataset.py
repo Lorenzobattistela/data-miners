@@ -7,8 +7,6 @@ import numpy as np
 SPAM = 0
 HAM = 1
 
-
-
 def load_generated_spam() -> pd.DataFrame:
     try:
         df = pd.read_csv('generated_spam.csv', encoding="utf-8", delimiter='|')
