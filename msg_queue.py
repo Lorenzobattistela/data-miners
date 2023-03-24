@@ -22,6 +22,11 @@ class Database:
         if self.connection:
             self.connection.close()
     
+    def drop_database(self):
+        cursor = self.connection.cursor()
+        cursor.execute('''DROP TABLE message_queue''')
+        self.connection.commit()
+    
     def insert_message(self, message, is_spam):
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO message_queue(message, is_spam)
