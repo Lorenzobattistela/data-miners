@@ -12,30 +12,30 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.10]
+        python-version: [3.9]
 
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
-        run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-          source $HOME/.poetry/env
-        shell: bash
+    - name: Install Poetry
+      run: |
+        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+        source $HOME/.poetry/env
+      shell: bash
 
-      - name: Install dependencies
-        run: poetry install
-        working-directory: ${{ github.workspace }}/data_miners
+    - name: Install dependencies
+      run: poetry install
+      working-directory: ${{ github.workspace }}
 
-      - name: Run tests
-        run: poetry run pytest
-        working-directory: ${{ github.workspace }}/data_miners
+    - name: Run tests
+      run: poetry run pytest
+      working-directory: ${{ github.workspace }}
 
-      - name: Run linter
-        run: poetry run flake8
-        working-directory: ${{ github.workspace }}/data_miners
+    - name: Run linter
+      run: poetry run flake8
+      working-directory: ${{ github.workspace }}
