@@ -1,4 +1,4 @@
-
+import pytest
 from msg_queue import Database
 import os
 
@@ -7,7 +7,6 @@ FILENAME = "test.sqlite"
 def test_db_creation():
     db = Database(FILENAME)
     assert db.db_file == FILENAME
-
     db.connect()
     assert db.connection != None
     db.drop_database()
@@ -83,3 +82,9 @@ def test_csv_writing():
     db.drop_database()
     db.close()
 
+@pytest.fixture(scope="session", autouse=True)
+def cleanup(request):
+    def remove_files():
+        if os.path.exists(FILENAME):
+            os.remove(FILENAME)
+    request.addfinalizer(remove_files)

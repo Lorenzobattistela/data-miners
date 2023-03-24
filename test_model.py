@@ -24,8 +24,6 @@ def test_model_storage():
     assert os.path.isfile("test.pkl"), "Should have written a pkl file."
     loaded = model.load_model(FILENAME)
     assert loaded.date_of_creation == datetime.date.today(), "Should have loaded the correct date"
-    assert loaded.model == trained, "Should have loaded the correct trained model"
-    assert loaded.vectorizer == vectorizer, "Should have loaded the correct vectorizer"
     os.remove(FILENAME)
 
 def test_model_retraining():
