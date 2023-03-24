@@ -19,17 +19,19 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Install Poetry
-      run: |
-        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
-        export PATH="$HOME/.poetry/bin:$PATH"
-        poetry config virtualenvs.create false
+    - name: Set up Poetry
+      uses: dmerejkowsky/action-poetry@v2
+      with:
+        virtualenvs.create: true
 
     - name: Install dependencies
       run: poetry install
+      working-directory: ${{ github.workspace }}/data_miners  # <-- Add this line
 
     - name: Run tests
       run: poetry run pytest
+      working-directory: ${{ github.workspace }}/data_miners  # <-- Add this line
 
     - name: Run linter
       run: poetry run flake8 --exclude=.git,__pycache__,.venv --max-line-length=120
+      working-directory: ${{ github.workspace }}/data_miners  # <-- Add this line
