@@ -75,6 +75,3 @@ def predict_route():
     prediction = predict_label(prompt=json["prompt"], classifier=ai_model.model, vectorizer=ai_model.vectorizer)
     store_message_in_queue(message=json["prompt"], prediction=prediction)
     return jsonify({"prediction": prediction})
-
-
-app.run()
