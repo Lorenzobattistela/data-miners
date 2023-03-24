@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: dataminers
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "poetry run gunicorn api:app"
