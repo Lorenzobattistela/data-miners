@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Contact messages</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('.static', filename='contact.css')}}"
+    />
+  </head>
+  <body>
+    <h1>Contact messages</h1>
+    {% for message in messages %}
+    <div class="msgs">
+      <h3>{{message.name}}</h3>
+      <h3>{{message.email}}</h3>
+      <h3>{{message.message}}</h3>
+      <hr />
+    </div>
+    {% endfor %}
+  </body>
+</html>
