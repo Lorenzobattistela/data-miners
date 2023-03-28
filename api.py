@@ -4,6 +4,7 @@ import jwt
 from functools import wraps
 from model import load_model, predict_label
 from msg_queue import Database
+from website import ContactMessage, load_messages
 
 SPAM = 0
 HAM = 1
@@ -54,6 +55,20 @@ def token_required(f):
 @app.route("/")
 def home():
     return "OK"
+
+@app.route("/form/contact", methods=['GET', 'POST'])
+def contact():
+    if request.method == 'GET':
+        contact_messages = load_messages()
+        return render_template("contact.html", messages=contact_messages)
+
+    name = request.form.get("name")
+    email = request.form.get("email")
+    message = request.form.get("message")
+    contact_message = ContactMessage(name, email, message)
+    saved = contact_message.save_to_csv()
+    return jsonify({"status": 201}) if saved else jsonify({"status": 500})
+
 
 
 @app.route("/admin/queue", methods=['GET', 'POST'])
