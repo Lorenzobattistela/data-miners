@@ -56,6 +56,7 @@ def token_required(f):
 def home():
     return "OK"
 
+
 @app.route("/form/contact", methods=['GET', 'POST'])
 def contact():
     if request.method == 'GET':
@@ -68,7 +69,6 @@ def contact():
     contact_message = ContactMessage(name, email, message)
     saved = contact_message.save_to_csv()
     return jsonify({"status": 201}) if saved else jsonify({"status": 500})
-
 
 
 @app.route("/admin/queue", methods=['GET', 'POST'])

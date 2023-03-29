@@ -1,8 +1,9 @@
-import os
+
 import csv
 import logging
 from collections import namedtuple
 from typing import List, NamedTuple
+
 
 class ContactMessage:
     def __init__(self, name: str, email: str, message: str) -> None:
@@ -39,5 +40,5 @@ def load_messages(filename: str = "contact_messages.csv") -> List[NamedTuple]:
         rows.pop(0)
         return rows
     except Exception as e:
-        logging.error("Error while loading contact messages from csv")
+        logging.error(f"Error while loading contact messages from csv: {e}")
         return []
