@@ -30,4 +30,4 @@ exclude =
     .lock
     .toml
 ignore = 
-    E501
+    E501,F541
