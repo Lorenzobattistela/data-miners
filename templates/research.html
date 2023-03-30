@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Message Queue</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('.static', filename='researchers.css')}}"
+    />
+  </head>
+  <body>
+    <h1>Researchers</h1>
+    <div class="form">
+      <form method="post" action="/research">
+        <label for="search">Digite o assunto que você deseja pesquisar:</label>
+        <input type="text" name="search_query" id="search" />
+        <input type="submit" value="Enviar" />
+      </form>
+    </div>
+    <div class="results">
+      {% for result in results %}
+      <div class="result">
+        <h2>Título: {{ result.article.title }}</h2>
+        <p>Resumo: {{ result.article.summary }}</p>
+        <p>Citação: {{ result.citation }}</p>
+        <p>
+          Link:
+          <a href="{{result.article.arxiv_id}}" target="_blank"
+            >{{ result.article.arxiv_id }}</a
+          >
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </body>
+</html>

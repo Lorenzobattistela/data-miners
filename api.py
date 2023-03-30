@@ -5,6 +5,7 @@ from functools import wraps
 from model import load_model, predict_label
 from msg_queue import Database
 from website import ContactMessage, load_messages
+from research_helper import Researcher
 
 SPAM = 0
 HAM = 1
@@ -90,3 +91,14 @@ def predict_route():
     prediction = predict_label(prompt=json["prompt"], classifier=ai_model.model, vectorizer=ai_model.vectorizer)
     store_message_in_queue(message=json["prompt"], prediction=prediction)
     return jsonify({"prediction": prediction})
+
+
+@app.route("/research", methods=['GET', 'POST'])
+def search_articles():
+    if request.method == 'GET':
+        return render_template("research.html")
+
+    search_query = request.form.get("search_query")
+    research = Researcher(search_query=search_query)
+    results = research.search()
+    return render_template("research.html", results=results)
