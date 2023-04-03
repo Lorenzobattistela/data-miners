@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Message Queue</title>
+    <title>Researchers</title>
     <link
       rel="stylesheet"
       type="text/css"
@@ -14,8 +14,11 @@
       <form method="post" action="/research">
         <label for="search">Digite o assunto que você deseja pesquisar:</label>
         <input type="text" name="search_query" id="search" />
+	<label for="translate">Deseja traduzir os resultados?</label>
+	<input type="checkbox" id="translate" name="translate" value="true"/>
         <input type="submit" value="Enviar" />
       </form>
+      <p>Você pode pesquisar termos em português e inglês. Os artigos em sua maioria são escritos em inglês, por isso traduzimos os resultados se você marcar a opção de tradução.</p>
     </div>
     <div class="results">
       {% for result in results %}

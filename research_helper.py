@@ -1,6 +1,7 @@
 import urllib.request
 import xml.etree.ElementTree as ET
 from typing import List
+from deep_translator import GoogleTranslator
 
 
 class Article:
@@ -9,6 +10,13 @@ class Article:
         self.published = published
         self.authors = authors
         self.summary = summary
+        self.original_title = None
+
+    def translate(self):
+        translator = GoogleTranslator(source='en', target='pt')
+        self.original_title = self.title
+        self.title = translator.translate(self.title)
+        self.summary = translator.translate(self.summary)
 
 
 class Reference:
@@ -19,6 +27,7 @@ class Reference:
     def format_authors_name(self) -> str:
         formated_authors = []
         for author in self.article.authors:
+            author = author.strip()
             splited_name = author.split(" ")
             first_letter = splited_name[0][0]
             last_name = splited_name[1]
@@ -33,8 +42,12 @@ class Reference:
         authors_name = self.format_authors_name()
         authors_str = " ,& ".join(authors_name)
         publish_year = self.format_publish_year()
-        self.citation = f"{authors_str} {publish_year}. {self.article.title}. {self.source}."
-        return f"{authors_str} {publish_year}. {self.article.title}. {self.source}."
+        if self.article.original_title:
+            title = self.article.original_title
+        else:
+            title = self.article.title
+        self.citation = f"{authors_str} {publish_year}. {title}. {self.source}."
+        return f"{authors_str} {publish_year}. {title}. {self.source}."
 
 
 class ArxivArticle(Article):
@@ -44,6 +57,7 @@ class ArxivArticle(Article):
         self.authors = authors
         self.summary = summary
         self.arxiv_id = arxiv_id
+        self.original_title = None
 
 
 class ArxivReference(Reference):
@@ -60,20 +74,31 @@ class ArxivReference(Reference):
         authors_str = " ,& ".join(authors_name)
         publish_year = self.format_publish_year()
         formated_id = self.format_arxiv_id()
-        self.citation = f"{authors_str} {publish_year}. {self.article.title}. {self.source}:{formated_id}"
-        return f"{authors_str} {publish_year}. {self.article.title}. {self.source}:{formated_id}"
+        if self.article.original_title:
+            title = self.article.original_title
+        else:
+            title = self.article.title
+
+        self.citation = f"{authors_str} {publish_year}. {title}. {self.source}:{formated_id}"
+        return f"{authors_str} {publish_year}. {title}. {self.source}:{formated_id}"
 
 
 class Researcher:
-    def __init__(self, search_query: str) -> None:
+    def __init__(self, search_query: str, translate: str) -> None:
         self.search_query = search_query
         self.is_clean_query = False
+        self.translate = True if translate == "true" else False
 
     def clean_query(self):
         self.is_clean_query = True
-        return self.search_query.replace(" ", "+")
+        self.search_query = self.search_query.replace(" ", "+")
+
+    def translate_query(self):
+        translated = GoogleTranslator(source='auto', target='en').translate(self.search_query)
+        return translated
 
     def search(self):
+        self.search_query = self.translate_query()
         if not self.is_clean_query:
             self.clean_query()
 
@@ -97,6 +122,8 @@ class Researcher:
             id_element = entry.find(f"{{http://www.w3.org/2005/Atom}}id").text
 
             art = ArxivArticle(title, published, authors, summary, id_element)
+            if self.translate:
+                art.translate()
             art_ref = ArxivReference(art)
             art_ref.build_citing()
             refs.append(art_ref)
