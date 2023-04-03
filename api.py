@@ -99,6 +99,7 @@ def search_articles():
         return render_template("research.html")
 
     search_query = request.form.get("search_query")
-    research = Researcher(search_query=search_query)
+    translate = request.form.get("translate") or "false"
+    research = Researcher(search_query=search_query, translate=translate)
     results = research.search()
     return render_template("research.html", results=results)
