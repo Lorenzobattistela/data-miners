@@ -12,8 +12,7 @@ SPAM = 0
 HAM = 1
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000", "*"], methods=["GET","POST"])
-
+CORS(app, origins=["http://localhost:3000", "*"], methods=["GET", "POST"])
 
 
 def get_model():
