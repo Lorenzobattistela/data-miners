@@ -1,5 +1,6 @@
-
+import json
 from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask_cors import CORS
 import jwt
 from functools import wraps
 from model import load_model, predict_label
@@ -11,6 +12,7 @@ SPAM = 0
 HAM = 1
 
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:3000", "*"], methods=["GET", "POST"])
 
 
 def get_model():
@@ -63,13 +65,13 @@ def contact():
     if request.method == 'GET':
         contact_messages = load_messages()
         return render_template("contact.html", messages=contact_messages)
-
-    name = request.form.get("name")
-    email = request.form.get("email")
-    message = request.form.get("message")
+    data = json.loads(request.get_data().decode("utf-8"))
+    name = data.get("email")
+    email = data.get("email")
+    message = data.get("message")
     contact_message = ContactMessage(name, email, message)
     saved = contact_message.save_to_csv()
-    return jsonify({"status": 201}) if saved else jsonify({"status": 500})
+    return jsonify({"status": 201, "success": True}) if saved else jsonify({"status": 500})
 
 
 @app.route("/admin/queue", methods=['GET', 'POST'])
@@ -79,7 +81,6 @@ def msg_queue():
         return render_template("messages.html", messages=messages)
 
     msg_id = request.form.get("msg_id")
-    print(msg_id)
     delete_message(msg_id=msg_id)
     return redirect(url_for('msg_queue'))
 

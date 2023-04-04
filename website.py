@@ -24,8 +24,8 @@ class ContactMessage:
                 writer = csv.writer(f, delimiter="|")
                 writer.writerow(new_row)
             return True
-        except Exception:
-            logging.error("Error while saving contact message to csv")
+        except Exception as e:
+            logging.error(f"Error while saving contact message to csv: {e}")
             return False
 
 
